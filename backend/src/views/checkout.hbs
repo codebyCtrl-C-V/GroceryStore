@@ -1,0 +1,102 @@
+<div class="container py-5">
+  <h2 class="mb-4 text-center">Thanh toán</h2>
+
+  <form method="POST" action="/checkout/submit" id="checkoutForm">
+    <div class="row">
+      <!-- Thông tin khách hàng -->
+      <div class="col-md-6">
+        <div class="mb-3">
+          <label for="name" class="form-label">Họ và tên</label>
+          <input type="text" class="form-control" id="name" name="name" required>
+        </div>
+        <div class="mb-3">
+          <label for="phone" class="form-label">Số điện thoại</label>
+          <input type="tel" class="form-control" id="phone" name="phone" required>
+        </div>
+        <div class="mb-3">
+          <label for="address" class="form-label">Địa chỉ giao hàng</label>
+          <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
+        </div>
+      </div>
+
+      <!-- Tóm tắt đơn hàng + phương thức thanh toán -->
+      <div class="col-md-6">
+        <div class="card shadow-sm mb-4">
+          <div class="card-body">
+            <h5 class="card-title">Tóm tắt đơn hàng</h5>
+            <ul class="list-group mb-3">
+              {{#each cartItems}}
+              <li class="list-group-item d-flex justify-content-between">
+                <span>{{this.product.name}} (x{{this.quantity}})</span>
+                <strong>{{formatCurrency this.total}}</strong>
+              </li>
+              {{/each}}
+              <li class="list-group-item d-flex justify-content-between">
+                <span><strong>Tổng tiền</strong></span>
+                <strong class="text-primary">{{formatCurrency (calculateTotal cartItems)}}</strong>
+              </li>
+            </ul>
+
+            <div class="mb-3">
+              <label class="form-label">Phương thức thanh toán</label>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="paymentMethod" id="cod" value="cod" checked>
+                <label class="form-check-label" for="cod">Thanh toán khi nhận hàng</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="paymentMethod" id="online" value="online">
+                <label class="form-check-label" for="online">Thanh toán online</label>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-success w-100" id="submitBtn">Xác nhận thanh toán</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<script>
+document.getElementById('checkoutForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+    const totalAmount = {{calculateTotal cartItems}};
+    const name = document.getElementById('name').value;
+    const phone = document.getElementById('phone').value;
+    const address = document.getElementById('address').value;
+
+    if (paymentMethod === 'online') {
+        try {
+            const response = await fetch('/payment/create_payment_url', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    amount: totalAmount,
+                    orderInfo: `Thanh toán đơn hàng của ${name} - ${phone}`,
+                    customerName: name,
+                    customerPhone: phone,
+                    customerAddress: address
+                })
+            });
+
+            const data = await response.json();
+            if (data.paymentUrl) {
+                // Chuyển hướng đến cổng thanh toán
+                window.location.href = data.paymentUrl;
+            } else {
+                alert('Không thể tạo URL thanh toán. Vui lòng thử lại sau.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Có lỗi xảy ra khi tạo URL thanh toán');
+        }
+    } else {
+        // Thanh toán khi nhận hàng, gửi form thông thường
+        this.submit();
+    }
+});
+</script>
