@@ -3,6 +3,7 @@ const path = require("path");
 const app = express();
 const cors = require("cors");
 
+// config cors
 app.use(
   cors({
     origin: "http://localhost:5173",
