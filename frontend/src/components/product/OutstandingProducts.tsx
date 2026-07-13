@@ -6,6 +6,7 @@ import {
 } from "@ant-design/icons";
 
 import styles from "./outstandingProducts.module.css";
+import { Link } from "react-router-dom";
 
 interface Product {
   id: string;
@@ -34,12 +35,12 @@ export default function OutstandingProducts({
         {products.map((product) => (
           <div key={product.id} className={styles.card}>
             {/* IMAGE */}
-            <a
-              href={`/product/${product.slug}`}
+            <Link
+              to={`/product/${product.slug}`}
               className={styles.imageWrapper}
             >
               <img src={product.image} alt={product.name} />
-            </a>
+            </Link>
 
             {/* INFO */}
             <div className={styles.content}>

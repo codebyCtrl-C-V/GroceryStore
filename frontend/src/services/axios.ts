@@ -8,7 +8,8 @@ let axiosInstance: AxiosInstance;
 const _createAxios = (url: string, token?: string | null, headers?: Record<string, string>): AxiosInstance => {
   const instance = axios.create({
     baseURL: url,
-    headers: headers || {}
+    headers: headers || {},
+    withCredentials: true
   });
 
   instance.interceptors.request.use(

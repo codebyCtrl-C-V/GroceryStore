@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import AppRouter from './routers/AppRouter';
 import { useNavigate } from 'react-router-dom';
 import useAuth from './hooks/useAuth';
-// import { refreshToken } from './services/apiAuth';
+import { refreshToken } from './services/apiUser';
 
 function App() {
   const { fetchUserInfor } = useAuth();
@@ -20,10 +20,12 @@ function App() {
       }
 
       try {
-        // const newToken = await refreshToken();
-        // if (!newToken) throw new Error('Refresh token failed');
+        const res = await refreshToken();
+        if (res && res.status === "success" && res.data?.accessToken) {
+          localStorage.setItem('access_token', res.data.accessToken);
+        }
 
-        // await fetchUserInfor();
+        await fetchUserInfor();
         setReady(true);
       } catch (err) {
         console.error(err);

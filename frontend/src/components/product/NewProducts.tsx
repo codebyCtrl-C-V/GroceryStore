@@ -9,6 +9,7 @@ import {
 import { Carousel } from "antd";
 
 import styles from "./newProducts.module.css";
+import { Link } from "react-router-dom";
 
 interface Product {
   id: string;
@@ -53,9 +54,9 @@ export default function NewProducts({ newProducts = [] }: Props) {
           <h2>Sản phẩm mới về</h2>
         </div>
 
-        <a href="/products" className={styles.viewAll}>
+        <Link to="/products" className={styles.viewAll}>
           Xem tất cả →
-        </a>
+        </Link>
       </div>
 
       {/* CAROUSEL */}
@@ -99,12 +100,12 @@ export default function NewProducts({ newProducts = [] }: Props) {
               <div className={styles.sale}>-{product.sale}%</div>
 
               {/* IMAGE */}
-              <a
-                href={`/product/${product.slug}`}
+              <Link
+                to={`/product/${product.slug}`}
                 className={styles.imageWrapper}
               >
                 <img src={product.image} alt={product.name} />
-              </a>
+              </Link>
 
               {/* CONTENT */}
               <div className={styles.content}>

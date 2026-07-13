@@ -1,6 +1,7 @@
 import styles from "./banner.module.css";
 import { ArrowRightOutlined } from "@ant-design/icons";
 import { Carousel } from "antd";
+import { Link } from "react-router-dom";
 
 export default function Banner() {
   return (
@@ -31,9 +32,9 @@ export default function Banner() {
                       giàu vitamin C và khoáng chất.
                     </p>
 
-                    <a href="/product/nuoc-cam" className={styles.button}>
+                    <Link to="/product/nuoc-cam" className={styles.button}>
                       Mua ngay
-                    </a>
+                    </Link>
                   </div>
 
                   <div className={styles.imageWrapper}>
@@ -61,9 +62,9 @@ export default function Banner() {
                       giúp tăng cường sức khỏe.
                     </p>
 
-                    <a href="/product/nho" className={styles.button}>
+                    <Link to="/product/nho" className={styles.button}>
                       Mua ngay
-                    </a>
+                    </Link>
                   </div>
 
                   <div className={styles.imageWrapper}>
@@ -90,9 +91,9 @@ export default function Banner() {
 
               <h3>Trái cây & Rau củ</h3>
 
-              <a href="/category/sale/vegetables-fruits?page=1">
+              <Link to="/category/sale/vegetables-fruits?page=1">
                 Đến xem <ArrowRightOutlined />
-              </a>
+              </Link>
             </div>
           </div>
 
@@ -109,9 +110,9 @@ export default function Banner() {
 
               <h3>Sản phẩm chế biến</h3>
 
-              <a href="/category/sale/proceed?page=1">
+              <Link to="/category/sale/proceed?page=1">
                 Đến xem <ArrowRightOutlined />
-              </a>
+              </Link>
             </div>
           </div>
         </div>

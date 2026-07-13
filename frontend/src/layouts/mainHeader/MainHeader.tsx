@@ -4,6 +4,8 @@ import {
   ShoppingCartOutlined,
   UserOutlined,
 } from "@ant-design/icons";
+import useAuth from "../../hooks/useAuth";
+import { Link } from "react-router-dom";
 
 interface User {
   name: string;
@@ -20,15 +22,16 @@ interface Props {
 }
 
 export default function Header({ user, categories }: Props) {
+  const { logout } = useAuth();
   return (
     <header className={styles.header}>
       {/* TOP */}
       <div className={styles.top}>
         {/* LOGO */}
         <div className={styles.logo}>
-          <a href="/">
+          <Link to="/">
             <img src="/images/logo.png" alt="logo" />
-          </a>
+          </Link>
         </div>
 
         {/* SEARCH */}
@@ -59,23 +62,30 @@ export default function Header({ user, categories }: Props) {
               <span>{user.name}</span>
 
               <div className={styles.dropdown}>
-                <a href="/profile">Tài khoản</a>
-                <a href="/orders">Đơn hàng</a>
-                <a href="/logout" className={styles.logout}>
+                <Link to="/profile">Tài khoản</Link>
+                <Link to="/orders">Đơn hàng</Link>
+                <span
+                  onClick={(e) => {
+                    e.preventDefault();
+                    logout();
+                  }}
+                  className={styles.logout}
+                  style={{ cursor: "pointer", display: "block" }}
+                >
                   Đăng xuất
-                </a>
+                </span>
               </div>
             </div>
           ) : (
-            <a href="/login" className={styles.login}>
+            <Link to="/login" className={styles.login}>
               <UserOutlined />
-            </a>
+            </Link>
           )}
 
-          <a href="/cart" className={styles.cart}>
+          <Link to="/cart" className={styles.cart}>
             <ShoppingCartOutlined />
             <span>Giỏ hàng</span>
-          </a>
+          </Link>
         </div>
       </div>
 
@@ -86,21 +96,21 @@ export default function Header({ user, categories }: Props) {
 
           <div className={styles.dropdown}>
             {categories.map((c) => (
-              <a key={c.slug} href={`/category/${c.slug}`}>
+              <Link to={`/category/${c.slug}`} key={c.slug}>
                 {c.name}
-              </a>
+              </Link>
             ))}
           </div>
         </div>
 
-        <a href="/news">Tin tức</a>
-        <a href="/store-system">Hệ thống cửa hàng</a>
+        <Link to="/news">Tin tức</Link>
+        <Link to="/store-system">Hệ thống cửa hàng</Link>
 
         <div className={styles.categories}>
           <span>Về chúng tôi</span>
           <div className={styles.dropdown}>
-            <a href="/introduce">Giới thiệu</a>
-            <a href="/recruitment">Tuyển dụng</a>
+            <Link to="/introduce">Giới thiệu</Link>
+            <Link to="/recruitment">Tuyển dụng</Link>
           </div>
         </div>
       </div>

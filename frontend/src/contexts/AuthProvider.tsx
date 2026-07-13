@@ -1,7 +1,7 @@
 import { useState, type ReactNode, createContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
-// import { getProfile } from '../services/apiUser';
+import { getProfile, logoutUser } from '../services/apiUser';
 
 interface AuthContextType {
   userInfor: any | undefined;
@@ -29,8 +29,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const fetchUserInfor = async () => {
     try {
-    //   const res = await getProfile();
-    //   setUserInfor(res.profile);
+      const res = await getProfile();
+      if (res?.status === "success") {
+        setUserInfor(res.data);
+      }
     } catch (error) {
       console.error(error);
     }
@@ -58,10 +60,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   const logout = async () => {
+    try {
+      const rt = localStorage.getItem('refresh_token') || undefined;
+      await logoutUser(rt);
+    } catch (err) {
+      console.error("Lỗi đăng xuất API:", err);
+    }
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     setUserInfor(undefined);
-    navigate('/signin');
+    navigate('/login');
   };
 
   return <AuthContext.Provider value={{ login, logout, userInfor, fetchUserInfor }}>{children}</AuthContext.Provider>;

@@ -151,6 +151,17 @@ class CategoryController {
       return res.status(500).json({ status: "error", message: "Lỗi server" });
     }
   }
+
+  // Lấy tất cả danh mục
+  async getAllCategories(req, res) {
+    try {
+      const categories = await Category.findAll({ raw: true });
+      return res.json({ status: "success", data: categories });
+    } catch (error) {
+      console.error("Lỗi lấy danh sách danh mục:", error);
+      return res.status(500).json({ status: "error", message: "Lỗi server" });
+    }
+  }
 }
 
 module.exports = new CategoryController();

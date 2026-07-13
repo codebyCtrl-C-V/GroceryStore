@@ -26,8 +26,7 @@ export default function RequireAuth({
   }
 
   // Nếu có yêu cầu phân quyền thì kiểm tra role
-  const hasRole = roles && userRoles.some((r) => roles.includes(r));
-  if (!hasRole) {
+  if (roles && !userRoles.some((r) => roles.includes(r))) {
     return <Navigate to="/unauthorized" replace />;
   }
 

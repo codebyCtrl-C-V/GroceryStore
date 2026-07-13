@@ -7,6 +7,7 @@ import {
 } from "@ant-design/icons";
 
 import styles from "./footers.module.css";
+import { Link } from "react-router-dom";
 
 export default function Footer() {
   return (
@@ -75,11 +76,11 @@ export default function Footer() {
 
               <ul className={styles.menu}>
                 <li>
-                  <a href="/introduce">Về chúng tôi</a>
+                  <Link to="/introduce">Về chúng tôi</Link>
                 </li>
 
                 <li>
-                  <a href="/recruitment">Tuyển dụng</a>
+                  <Link to="/recruitment">Tuyển dụng</Link>
                 </li>
               </ul>
             </div>
@@ -90,7 +91,7 @@ export default function Footer() {
 
               <ul className={styles.menu}>
                 <li>
-                  <a href="/policy">Chính sách mua hàng</a>
+                  <Link to="/policy">Chính sách mua hàng</Link>
                 </li>
               </ul>
             </div>

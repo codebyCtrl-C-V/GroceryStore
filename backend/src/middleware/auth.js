@@ -6,7 +6,7 @@ dotenv.config();
 // Middleware xác thực JWT
 const authMiddleware = (req, res, next) => {
     let token = req.cookies.token;
-    
+
     // Also check Authorization header
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
         token = req.headers.authorization.split(' ')[1];
@@ -22,7 +22,7 @@ const authMiddleware = (req, res, next) => {
         next();
     } catch (error) {
         if (error.name === 'TokenExpiredError') {
-             return res.status(401).json({ status: "error", message: "Token đã hết hạn", code: "TOKEN_EXPIRED" });
+            return res.status(401).json({ status: "error", message: "Token đã hết hạn", code: "TOKEN_EXPIRED" });
         }
         return res.status(403).json({ status: "error", message: "Token không hợp lệ" });
     }
