@@ -36,5 +36,8 @@ export const refreshToken = async () => {
   const rt = localStorage.getItem('refresh_token');
   if (!rt) return null;
   const response = await axiosInstance.post("login/refresh-token", { refreshToken: rt });
-  return response.data;
+  if (response && response?.data?.data?.accessToken) {
+    localStorage.setItem('access_token', response?.data?.data?.accessToken);
+  }
+  return response?.data;
 };

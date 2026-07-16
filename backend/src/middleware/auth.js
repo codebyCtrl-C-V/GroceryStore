@@ -30,7 +30,7 @@ const authMiddleware = (req, res, next) => {
 
 // Middleware kiểm tra role admin
 const adminMiddleware = (req, res, next) => {
-    if (req.user.role !== "admin") return res.status(403).json({ status: "error", message: "Bạn không có quyền!" });
+    if (!req.user || req.user.role !== "admin") return res.status(403).json({ status: "error", message: "Bạn không có quyền!" });
     next();
 };
 

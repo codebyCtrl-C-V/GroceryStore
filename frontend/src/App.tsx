@@ -20,11 +20,7 @@ function App() {
       }
 
       try {
-        const res = await refreshToken();
-        if (res && res.status === "success" && res.data?.accessToken) {
-          localStorage.setItem('access_token', res.data.accessToken);
-        }
-
+        await refreshToken();
         await fetchUserInfor();
         setReady(true);
       } catch (err) {
@@ -37,10 +33,10 @@ function App() {
 
     initAuth();
 
-    // const intervalId = setInterval(refreshToken, 300000); // 5 phút
-    // return () => {
-    //   clearInterval(intervalId);
-    // };
+    const intervalId = setInterval(refreshToken, 60 * 1000 * 14); // 14 phút
+    return () => {
+      clearInterval(intervalId);
+    };
   }, []);
 
   return ready ? <AppRouter /> : null;

@@ -10,6 +10,7 @@ import { Carousel } from "antd";
 
 import styles from "./newProducts.module.css";
 import { Link } from "react-router-dom";
+import ProductCard from "./ProductCard";
 
 interface Product {
   id: string;

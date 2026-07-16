@@ -1,19 +1,15 @@
 import { Tabs } from "antd";
-import {
-  ShoppingCartOutlined,
-  MinusOutlined,
-  PlusOutlined,
-} from "@ant-design/icons";
-
 import styles from "./outstandingProducts.module.css";
-import { Link } from "react-router-dom";
+import ProductCard from "./ProductCard";
 
 interface Product {
-  id: string;
+  id: string | number;
   name: string;
   slug: string;
   image: string;
   price: number;
+  sale: number;
+  discountPrice?: number;
 }
 
 interface Props {
@@ -33,43 +29,7 @@ export default function OutstandingProducts({
     return (
       <div className={styles.grid}>
         {products.map((product) => (
-          <div key={product.id} className={styles.card}>
-            {/* IMAGE */}
-            <Link
-              to={`/product/${product.slug}`}
-              className={styles.imageWrapper}
-            >
-              <img src={product.image} alt={product.name} />
-            </Link>
-
-            {/* INFO */}
-            <div className={styles.content}>
-              <h3>{product.name}</h3>
-
-              <div className={styles.price}>
-                {product.price.toLocaleString("vi-VN")} VND
-              </div>
-
-              {/* ACTION */}
-              <div className={styles.bottom}>
-                <div className={styles.qty}>
-                  <button>
-                    <MinusOutlined />
-                  </button>
-
-                  <input value={1} readOnly />
-
-                  <button>
-                    <PlusOutlined />
-                  </button>
-                </div>
-
-                <button className={styles.cartBtn}>
-                  <ShoppingCartOutlined />
-                </button>
-              </div>
-            </div>
-          </div>
+          <ProductCard key={product.id} product={product} />
         ))}
       </div>
     );

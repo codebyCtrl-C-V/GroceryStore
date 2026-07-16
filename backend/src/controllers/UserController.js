@@ -42,11 +42,11 @@ class UserController {
       user.refreshToken = refreshToken;
       await user.save();
 
-      // (Optional) Vẫn có thể lưu refresh token vào cookie nếu muốn
-      res.cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-      });
+      // // (Optional) Vẫn có thể lưu refresh token vào cookie nếu muốn
+      // res.cookie("refreshToken", refreshToken, {
+      //   httpOnly: true,
+      //   maxAge: 7 * 24 * 60 * 60 * 1000,
+      // });
 
       return res.json({
         status: "success",
@@ -137,10 +137,10 @@ class UserController {
         // If not authenticated via req.user, try to clear by looking up token
         const token = req.body.refreshToken || req.cookies.refreshToken;
         if (token) {
-           await User.update({ refreshToken: null }, { where: { refreshToken: token } });
+          await User.update({ refreshToken: null }, { where: { refreshToken: token } });
         }
       }
-      
+
       res.clearCookie("refreshToken");
       res.clearCookie("token"); // clear old token cookie just in case
       return res.json({ status: "success", message: "Đăng xuất thành công" });

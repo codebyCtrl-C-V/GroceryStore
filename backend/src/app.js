@@ -2,6 +2,7 @@ const express = require("express");
 const path = require("path");
 const app = express();
 const cors = require("cors");
+const logger = require("./middleware/logger");
 
 // config cors
 app.use(
@@ -24,9 +25,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
 
-//Load danh mục sản phẩm
-const getCategories = require("./middleware/getCategories");
-app.use(getCategories);
+// Middleware ghi log request
+app.use(logger.requestLogger);
+app.use(logger.errorHandler);
 
 //import session
 const session = require("express-session");
