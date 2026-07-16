@@ -24,6 +24,17 @@ import Recruitment from '../pages/info/Recruitment';
 import StoreSystem from '../pages/info/StoreSystem';
 import PaymentReturn from '../pages/payment/PaymentReturn';
 
+// Import Admin Layout & Pages
+import AdminLayout from '../layouts/AdminLayout';
+import AdminDashboard from '../pages/admin/AdminDashboard';
+import AdminCategory from '../pages/admin/AdminCategory';
+import AdminProduct from '../pages/admin/AdminProduct';
+import AdminOrder from '../pages/admin/AdminOrder';
+import AdminPayment from '../pages/admin/AdminPayment';
+import AdminUser from '../pages/admin/AdminUser';
+import AdminNews from '../pages/admin/AdminNews';
+
+
 export default function AppRouter() {
   return (
     <Routes>
@@ -73,6 +84,24 @@ export default function AppRouter() {
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/orders" element={<Orders />} />
           <Route path="/payment/vnpay_return" element={<PaymentReturn />} />
+        </Route>
+
+        {/* Protected Admin routes (Requires login & admin role) */}
+        <Route
+          element={
+            <RequireAuth roles={['admin']}>
+              <AdminLayout />
+            </RequireAuth>
+          }
+        >
+          <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/category" element={<AdminCategory />} />
+          <Route path="/admin/product" element={<AdminProduct />} />
+          <Route path="/admin/order" element={<AdminOrder />} />
+          <Route path="/admin/payment" element={<AdminPayment />} />
+          <Route path="/admin/user" element={<AdminUser />} />
+          <Route path="/admin/news" element={<AdminNews />} />
         </Route>
 
         {/* Page Not Found fallback */}

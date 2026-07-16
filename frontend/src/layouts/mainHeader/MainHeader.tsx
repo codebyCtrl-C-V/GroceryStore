@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 
 interface User {
   name: string;
+  role?: string | string[];
 }
 
 interface Category {
@@ -64,6 +65,9 @@ export default function Header({ user, categories }: Props) {
               <div className={styles.dropdown}>
                 <Link to="/profile">Tài khoản</Link>
                 <Link to="/orders">Đơn hàng</Link>
+                {(Array.isArray(user.role) ? user.role.includes('admin') : user.role === 'admin') && (
+                  <Link to="/admin">Trang quản trị</Link>
+                )}
                 <span
                   onClick={(e) => {
                     e.preventDefault();

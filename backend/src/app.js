@@ -27,7 +27,6 @@ app.use(cookieParser());
 
 // Middleware ghi log request
 app.use(logger.requestLogger);
-app.use(logger.errorHandler);
 
 //import session
 const session = require("express-session");
