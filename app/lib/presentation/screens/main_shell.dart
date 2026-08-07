@@ -52,7 +52,7 @@ class _MainShellState extends State<MainShell> {
             const SizedBox(width: 8),
             Text(
               _selectedIndex == 0
-                  ? 'Grocery Store'
+                  ? 'D Food'
                   : _selectedIndex == 1
                       ? 'Tìm kiếm'
                       : _selectedIndex == 2

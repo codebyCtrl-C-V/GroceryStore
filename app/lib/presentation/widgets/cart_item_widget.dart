@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../data/models/cart_model.dart';
+import '../../core/utils/formatter.dart';
 import '../providers/cart_provider.dart';
 import '../providers/user_provider.dart';
 
@@ -66,7 +67,7 @@ class CartItemWidget extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'đ${item.finalPrice.toStringAsFixed(0)}',
+                  PriceFormatter.formatPrice(item.finalPrice),
                   style: const TextStyle(
                     color: AppColors.error,
                     fontWeight: FontWeight.w600,
@@ -75,7 +76,7 @@ class CartItemWidget extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Tổng: đ${item.total.toStringAsFixed(0)}',
+                  'Tổng: ${PriceFormatter.formatPrice(item.total)}',
                   style: TextStyle(
                     color: Colors.grey[600],
                     fontSize: 11,

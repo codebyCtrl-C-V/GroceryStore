@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
+import '../../../core/utils/formatter.dart';
 import '../../providers/cart_provider.dart';
 import '../../providers/user_provider.dart';
 import '../../widgets/cart_item_widget.dart';
@@ -96,7 +97,7 @@ class _CartScreenState extends State<CartScreen> {
                                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                               ),
                               Text(
-                                '${cartProvider.totalAmount.toStringAsFixed(0)}đ',
+                                PriceFormatter.formatPrice(cartProvider.totalAmount),
                                 style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,

@@ -4,6 +4,7 @@ import '../../core/constants/app_colors.dart';
 import '../../data/models/product_model.dart';
 import '../providers/cart_provider.dart';
 import '../providers/user_provider.dart';
+import '../../core/utils/formatter.dart';
 
 class ProductCard extends StatelessWidget {
   final ProductModel product;
@@ -81,7 +82,7 @@ class ProductCard extends StatelessWidget {
                         Row(
                           children: [
                             Text(
-                              '${product.discountPrice.toStringAsFixed(0)}đ',
+                              PriceFormatter.formatPrice(product.discountPrice),
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 13,
@@ -90,7 +91,7 @@ class ProductCard extends StatelessWidget {
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              '${product.price.toStringAsFixed(0)}đ',
+                              PriceFormatter.formatPrice(product.price),
                               style: const TextStyle(
                                 decoration: TextDecoration.lineThrough,
                                 fontSize: 10,
@@ -101,7 +102,7 @@ class ProductCard extends StatelessWidget {
                         ),
                       ] else ...[
                         Text(
-                          '${product.price.toStringAsFixed(0)}đ',
+                          PriceFormatter.formatPrice(product.price),
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 13,

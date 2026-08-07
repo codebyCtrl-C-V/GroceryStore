@@ -1,12 +1,12 @@
 const express = require("express");
 const router = express.Router();
-const axios = require("axios");
-const dns = require("dns");
 const fs = require("fs").promises;
 const path = require("path");
+const { GoogleGenAI } = require("@google/genai");
 require("dotenv").config();
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+// Khởi tạo SDK Gemini
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 const KNOWLEDGE_FILE = path.join(__dirname, "../../knowledge.json");
 
 // Đọc knowledge base từ file JSON
@@ -161,32 +161,28 @@ router.post("/api/chat", async (req, res) => {
       ? `${context}Dựa trên thông tin trên, hãy trả lời câu hỏi một cách chi tiết và hữu ích: ${userMessage}\n\nNếu thông tin trên không đủ để trả lời, hãy trả lời dựa trên kiến thức chung nhưng ghi chú rằng đây là thông tin tổng quát.`
       : `Trả lời câu hỏi sau một cách hữu ích: ${userMessage}`;
 
-    const requestData = {
-      contents: [
-        {
-          role: "user",
-          parts: [{ text: enhancedPrompt }],
-        },
-      ],
-      generationConfig: {
+    console.log("🚀 Gọi Gemini API...");
+    const startTime = Date.now();
+
+    // Gọi API thông qua SDK chính thức
+    const response = await ai.models.generateContent({
+      model: "gemini-2.0-flash",
+      contents: enhancedPrompt,
+      config: {
         temperature: 0.3,
         topK: 40,
         topP: 0.95,
         maxOutputTokens: 1024,
       },
-    };
+    });
 
-    console.log("🚀 Gọi Gemini API...");
-    const startTime = Date.now();
-    const response = await callGeminiAPI(requestData);
     const duration = Date.now() - startTime;
     console.log(`✅ API call hoàn thành trong ${duration}ms`);
 
-    const candidates = response.data.candidates;
-    const botMessage = candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+    const botMessage = response.text?.trim();
 
     if (botMessage) {
-      res.json({
+      return res.json({
         reply: botMessage,
         sources: relevantDocs.map((doc) => ({
           title: doc.title,
@@ -195,45 +191,9 @@ router.post("/api/chat", async (req, res) => {
         })),
         hasContext: relevantDocs.length > 0,
       });
+    } else {
+      return res.status(500).json({ error: "Không nhận được phản hồi từ AI." });
     }
-
-    // if (botMessage) {
-    //   // Nếu không có tài liệu liên quan, lưu vào knowledge.json
-    //   if (relevantDocs.length === 0) {
-    //     const knowledgeBase = await loadKnowledgeBase();
-    //     const newId = Math.max(...knowledgeBase.map((doc) => doc.id), 0) + 1;
-
-    //     // Tạo từ khóa tự động từ câu hỏi
-    //     const autoKeywords = userMessage
-    //       .split(" ")
-    //       .map((k) => k.toLowerCase().trim())
-    //       .filter((k) => k.length > 2 && isNaN(k)); // Loại bỏ từ quá ngắn và số
-
-    //     const newDoc = {
-    //       id: newId,
-    //       title: userMessage,
-    //       content: botMessage,
-    //       keywords: Array.from(new Set(autoKeywords)), // Loại trùng
-    //       category: "auto-generated",
-    //       createdAt: new Date(Date.now() + 7 * 60 * 60 * 1000).toISOString().replace('Z', '+07:00'),
-    //     };
-
-    //     knowledgeBase.push(newDoc);
-    //     await saveKnowledgeBase(knowledgeBase);
-    //     console.log("💾 Đã lưu câu hỏi mới vào knowledge base:", userMessage);
-    //   }
-
-    //   // Trả lời về client
-    //   res.json({
-    //     reply: botMessage,
-    //     sources: relevantDocs.map((doc) => ({
-    //       title: doc.title,
-    //       score: doc.relevanceScore,
-    //       category: doc.category,
-    //     })),
-    //     hasContext: relevantDocs.length > 0,
-    //   });
-    // }
   } catch (error) {
     console.error("💥 Lỗi chatbot:", error);
     res
@@ -241,60 +201,5 @@ router.post("/api/chat", async (req, res) => {
       .json({ error: "Lỗi hệ thống chatbot", details: error.message });
   }
 });
-
-// Hàm gọi Gemini API
-const GEMINI_ENDPOINTS = [
-  `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
-  `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
-];
-
-dns.setDefaultResultOrder("ipv4first");
-
-const createGeminiAxios = () => {
-  return axios.create({
-    timeout: 20000,
-    headers: {
-      "Content-Type": "application/json",
-      "User-Agent": "Mozilla/5.0 (compatible; NodeJS-App/1.0)",
-    },
-    family: 4,
-    httpsAgent: new (require("https").Agent)({
-      keepAlive: true,
-      family: 4,
-      timeout: 15000,
-    }),
-    lookup: (hostname, options, callback) => {
-      dns.lookup(hostname, { family: 4, ...options }, callback);
-    },
-  });
-};
-
-const callGeminiAPI = async (data, maxRetries = 2) => {
-  const geminiAxios = createGeminiAxios();
-  for (
-    let endpointIndex = 0;
-    endpointIndex < GEMINI_ENDPOINTS.length;
-    endpointIndex++
-  ) {
-    const endpoint = GEMINI_ENDPOINTS[endpointIndex];
-    for (let attempt = 1; attempt <= maxRetries; attempt++) {
-      try {
-        const response = await geminiAxios.post(endpoint, data);
-        return response;
-      } catch (error) {
-        if (error.code === "ETIMEDOUT" || error.code === "ECONNABORTED") break;
-        if (
-          !(
-            endpointIndex === GEMINI_ENDPOINTS.length - 1 &&
-            attempt === maxRetries
-          )
-        ) {
-          if (attempt < maxRetries)
-            await new Promise((resolve) => setTimeout(resolve, 2000 * attempt));
-        } else throw error;
-      }
-    }
-  }
-};
 
 module.exports = router;

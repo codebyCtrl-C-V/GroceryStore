@@ -160,7 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
             _buildProductSection(
               title: 'Rau xanh tươi mát',
               outstandingProducts: productProvider.vegetables,
-              onViewAll: () => Navigator.pushNamed(context, '/category-products', arguments: {'slug': 'rau-cu-qua', 'name': 'Rau xanh tươi mát'}),
+              onViewAll: () => Navigator.pushNamed(context, '/category-products', arguments: {'slug': 'rau-cu', 'name': 'Rau xanh tươi mát'}),
             ),
             _buildProductSection(
               title: 'Trái cây ngọt lành',
@@ -168,14 +168,14 @@ class _HomeScreenState extends State<HomeScreen> {
               onViewAll: () => Navigator.pushNamed(context, '/category-products', arguments: {'slug': 'trai-cay', 'name': 'Trái cây ngọt lành'}),
             ),
             _buildProductSection(
-              title: 'Nước ép & Sinh tố',
+              title: 'Đồ uống & Nước ép',
               outstandingProducts: productProvider.juices,
-              onViewAll: () => Navigator.pushNamed(context, '/category-products', arguments: {'slug': 'nuoc-ep', 'name': 'Nước ép & Sinh tố'}),
+              onViewAll: () => Navigator.pushNamed(context, '/category-products', arguments: {'slug': 'do-uong', 'name': 'Đồ uống & Nước ép'}),
             ),
             _buildProductSection(
               title: 'Thực phẩm chế biến',
               outstandingProducts: productProvider.processed,
-              onViewAll: () => Navigator.pushNamed(context, '/category-products', arguments: {'slug': 'che-bien', 'name': 'Thực phẩm chế biến'}),
+              onViewAll: () => Navigator.pushNamed(context, '/category-products', arguments: {'slug': 'thuc-pham-che-bien', 'name': 'Thực phẩm chế biến'}),
             ),
             const SizedBox(height: 32),
           ],

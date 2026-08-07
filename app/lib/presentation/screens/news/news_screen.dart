@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../providers/news_provider.dart';
+import '../../../core/utils/formatter.dart';
 
 class NewsScreen extends StatefulWidget {
   const NewsScreen({super.key});
@@ -116,7 +117,7 @@ class _NewsScreenState extends State<NewsScreen> {
                                         size: 12, color: AppColors.textSecondary),
                                     const SizedBox(width: 4),
                                     Text(
-                                      news.updatedAt.split(' ').first,
+                                      DateFormatter.format(news.updatedAt),
                                       style: const TextStyle(
                                           fontSize: 10, color: AppColors.textSecondary),
                                     ),

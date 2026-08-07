@@ -6,6 +6,7 @@ import '../../providers/cart_provider.dart';
 import '../../providers/order_provider.dart';
 import '../../providers/user_provider.dart';
 import '../../widgets/custom_button.dart';
+import '../../../core/utils/formatter.dart';
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key});
@@ -178,7 +179,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               ),
               const SizedBox(height: 8),
               _buildPaymentOption('cod', AppStrings.paymentCod),
-              _buildPaymentOption('vnpay', AppStrings.paymentVnpay),
+              // _buildPaymentOption('vnpay', AppStrings.paymentVnpay),
               const Divider(height: 32),
               const Text(
                 'Tóm tắt đơn hàng',
@@ -203,7 +204,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           ),
                         ),
                         Text(
-                          '${item.total.toStringAsFixed(0)}đ',
+                          PriceFormatter.formatPrice(item.total),
                           style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
                         ),
                       ],
@@ -217,7 +218,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 children: [
                   const Text('Tổng cộng:', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
                   Text(
-                    '${cartProvider.totalAmount.toStringAsFixed(0)}đ',
+                    PriceFormatter.formatPrice(cartProvider.totalAmount),
                     style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.error),
                   ),
                 ],
