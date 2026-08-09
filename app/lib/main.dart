@@ -10,8 +10,14 @@ import 'presentation/providers/order_provider.dart';
 import 'presentation/providers/product_provider.dart';
 import 'presentation/providers/user_provider.dart';
 
-void main() {
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Load .env file
+  await dotenv.load(fileName: ".env");
+
   runApp(
     MultiProvider(
       providers: [

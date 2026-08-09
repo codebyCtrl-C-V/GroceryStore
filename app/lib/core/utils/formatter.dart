@@ -1,14 +1,9 @@
-import 'package:intl/number_symbols.dart';
-import 'package:intl/number_symbols_data.dart';
 import 'package:intl/intl.dart';
 
 class DateFormatter {
   DateFormatter._();
 
-  static String format(
-    String? date, {
-    String pattern = 'dd/MM/yyyy HH:mm',
-  }) {
+  static String format(String? date, {String pattern = 'dd/MM/yyyy HH:mm'}) {
     if (date == null || date.isEmpty) return '';
 
     final dt = DateTime.tryParse(date);

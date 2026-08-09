@@ -5,13 +5,17 @@ class UserRepository {
   final UserRemoteDataSource _remoteDataSource;
 
   UserRepository({UserRemoteDataSource? remoteDataSource})
-      : _remoteDataSource = remoteDataSource ?? UserRemoteDataSource();
+    : _remoteDataSource = remoteDataSource ?? UserRemoteDataSource();
 
   Future<Map<String, dynamic>> login({
     required String email,
     required String password,
   }) {
     return _remoteDataSource.login(email: email, password: password);
+  }
+
+  Future<Map<String, dynamic>> loginWithGoogle({required String token}) {
+    return _remoteDataSource.loginWithGoogle(token: token);
   }
 
   Future<String> refreshToken({required String refreshTokenValue}) {

@@ -22,10 +22,7 @@ class UserRemoteDataSource {
     final response = await http.post(
       Uri.parse('${ApiEndpoints.baseUrl}${ApiEndpoints.login}'),
       headers: _headers(),
-      body: jsonEncode({
-        'email': email,
-        'password': password,
-      }),
+      body: jsonEncode({'email': email, 'password': password}),
     );
 
     final responseBody = jsonDecode(response.body);
@@ -45,8 +42,30 @@ class UserRemoteDataSource {
     }
   }
 
-  /// Dùng refreshToken để lấy accessToken mới — giống App.tsx gọi refreshToken() mỗi 14 phút.
-  /// POST /api/v1/login/refresh-token  { refreshToken: "..." }
+  Future<Map<String, dynamic>> loginWithGoogle({required String token}) async {
+    final response = await http.post(
+      Uri.parse('${ApiEndpoints.baseUrl}${ApiEndpoints.googleAuth}'),
+      headers: _headers(),
+      body: jsonEncode({'token': token}),
+    );
+
+    final responseBody = jsonDecode(response.body);
+
+    if (response.statusCode == 200 && responseBody['status'] == 'success') {
+      final data = responseBody['data'];
+      accessToken = data['accessToken'] as String?;
+      final userJson = data['user'] as Map<String, dynamic>;
+      final user = UserModel.fromJson(userJson);
+      return {
+        'user': user,
+        'accessToken': data['accessToken'],
+        'refreshToken': data['refreshToken'],
+      };
+    } else {
+      throw Exception(responseBody['message'] ?? 'Đăng nhập thất bại.');
+    }
+  }
+
   Future<String> refreshToken({required String refreshTokenValue}) async {
     final response = await http.post(
       Uri.parse('${ApiEndpoints.baseUrl}${ApiEndpoints.refreshToken}'),
@@ -99,7 +118,9 @@ class UserRemoteDataSource {
     if (response.statusCode == 200 && responseBody['status'] == 'success') {
       return UserModel.fromJson(responseBody['data'] as Map<String, dynamic>);
     } else {
-      throw Exception(responseBody['message'] ?? 'Không thể tải thông tin cá nhân.');
+      throw Exception(
+        responseBody['message'] ?? 'Không thể tải thông tin cá nhân.',
+      );
     }
   }
 
@@ -112,18 +133,16 @@ class UserRemoteDataSource {
     final response = await http.post(
       Uri.parse('${ApiEndpoints.baseUrl}${ApiEndpoints.profileUpdate}'),
       headers: _headers(token),
-      body: jsonEncode({
-        'name': name,
-        'phone': phone,
-        'address': address,
-      }),
+      body: jsonEncode({'name': name, 'phone': phone, 'address': address}),
     );
 
     final responseBody = jsonDecode(response.body);
     if (response.statusCode == 200 && responseBody['status'] == 'success') {
       return true;
     } else {
-      throw Exception(responseBody['message'] ?? 'Cập nhật thông tin thất bại.');
+      throw Exception(
+        responseBody['message'] ?? 'Cập nhật thông tin thất bại.',
+      );
     }
   }
 
@@ -156,9 +175,7 @@ class UserRemoteDataSource {
     final response = await http.post(
       Uri.parse('${ApiEndpoints.baseUrl}${ApiEndpoints.logout}'),
       headers: _headers(targetToken),
-      body: jsonEncode({
-        'refreshToken': refreshTokenValue,
-      }),
+      body: jsonEncode({'refreshToken': refreshTokenValue}),
     );
 
     accessToken = null;

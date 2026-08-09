@@ -10,5 +10,6 @@ const loginLimiter = createRateLimiter({
 
 router.post('/', loginLimiter, userController.login);
 router.post('/refresh-token', userController.refreshToken);
+router.post('/google', loginLimiter, userController.loginWithGoogle);
 
 module.exports = router;

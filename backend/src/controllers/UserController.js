@@ -2,6 +2,7 @@ const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const dotenv = require("dotenv");
+const { OAuth2Client } = require("google-auth-library");
 
 dotenv.config();
 
@@ -66,6 +67,9 @@ class UserController {
   async register(req, res) {
     const { name, email, password, repassword } = req.body;
 
+    if (!name || !email || !password || !repassword) {
+      return res.status(400).json({ status: "error", message: "Vui lòng nhập đầy đủ thông tin" });
+    }
     if (password !== repassword) {
       return res.status(400).json({ status: "error", message: "Mật khẩu nhập lại không khớp" });
     }
@@ -86,6 +90,56 @@ class UserController {
       });
 
       return res.status(201).json({ status: "success", message: "Đăng ký thành công" });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ status: "error", message: "Lỗi server" });
+    }
+  }
+
+  async loginWithGoogle(req, res) {
+    const { token } = req.body;
+    const client = new OAuth2Client(process.env.GOOGLE_WEB_CLIENT_ID);
+
+    try {
+      const ticket = await client.verifyIdToken({
+        idToken: token,
+        audience: process.env.GOOGLE_WEB_CLIENT_ID,
+      });
+      const payload = ticket.getPayload();
+
+      let user = await User.findOne({ where: { email: payload.email } });
+      if (!user) {
+        user = await User.create({
+          name: payload.name,
+          email: payload.email,
+          avatar: payload.picture,
+          googleId: payload.sub,
+        });
+      }
+
+      const accessToken = jwt.sign(
+        { id: user.id, email: user.email, role: user.role, name: user.name },
+        process.env.JWT_SECRET,
+        { expiresIn: process.env.JWT_EXPIRES || '15m' }
+      );
+
+      const refreshToken = jwt.sign(
+        { id: user.id },
+        process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET,
+        { expiresIn: process.env.JWT_REFRESH_EXPIRES || '7d' }
+      );
+
+      user.refreshToken = refreshToken;
+      await user.save();
+
+      return res.json({
+        status: "success",
+        data: {
+          user: { id: user.id, name: user.name, email: user.email, role: user.role, avatar: user.avatar },
+          accessToken,
+          refreshToken
+        }
+      });
     } catch (error) {
       console.error(error);
       return res.status(500).json({ status: "error", message: "Lỗi server" });

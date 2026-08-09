@@ -1,8 +1,9 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 class ApiEndpoints {
   ApiEndpoints._();
 
-  // URL cho Android Emulator kết nối với localhost trên máy host
-  static const String baseUrl = 'http://192.168.1.5:3000/api/v1/';
+  static String baseUrl = dotenv.env['API_BASE_URL']!;
 
   // Authentication
   static const String login = 'login';
@@ -12,6 +13,7 @@ class ApiEndpoints {
   static const String profile = 'profile';
   static const String profileUpdate = 'profile/update';
   static const String changePassword = 'profile/change-password';
+  static const String googleAuth = 'login/google';
 
   // Products
   static const String productsForHome = 'product/for_home';

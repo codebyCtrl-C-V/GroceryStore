@@ -18,6 +18,7 @@ class AppStrings {
   static const String loginButton = 'Đăng nhập';
   static const String registerNavigate = 'Chưa có tài khoản? Đăng ký ngay';
   static const String loginError = 'Email hoặc mật khẩu không hợp lệ';
+  static const String loginWithGoogle = 'Đăng nhập với Google';
 
   // Register screen
   static const String registerTitle = 'Đăng ký';
@@ -65,7 +66,8 @@ class AppStrings {
   static const String orderTotal = 'Tổng tiền';
   static const String orderDate = 'Ngày đặt';
   static const String cancelOrderButton = 'Hủy đơn hàng';
-  static const String cancelOrderConfirm = 'Bạn có chắc chắn muốn hủy đơn hàng này?';
+  static const String cancelOrderConfirm =
+      'Bạn có chắc chắn muốn hủy đơn hàng này?';
 
   // Profile screen
   static const String profileTitle = 'Cá nhân';
