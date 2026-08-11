@@ -74,4 +74,15 @@ class UserRepository {
       refreshTokenValue: refreshTokenValue,
     );
   }
+
+  Future<bool> updateFcmToken({
+    required String token,
+    required String fcmToken,
+  }) {
+    return _remoteDataSource.updateFcmToken(token: token, fcmToken: fcmToken);
+  }
+
+  Future<bool> deleteFcmToken({required String token}) {
+    return _remoteDataSource.deleteFcmToken(token: token);
+  }
 }

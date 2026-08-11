@@ -3,6 +3,7 @@ import '../../core/services/auth_storage_service.dart';
 import '../../data/models/user_model.dart';
 import '../../data/repositories/user_repository.dart';
 import '../../core/services/google_auth_helper.dart';
+import '../../core/services/notification_service.dart';
 
 /// Trạng thái khởi tạo auth — tương đương [ready] state trong App.tsx
 enum AuthStatus {
@@ -40,6 +41,17 @@ class UserProvider extends ChangeNotifier {
   AuthStatus get authStatus => _authStatus;
   bool get isGoogleLoading => _isGoogleLoading;
 
+  Future<void> _syncFcmToken() async {
+    final token = NotificationService.instance.fcmToken;
+    if (token == null || _accessToken == null) return;
+
+    try {
+      await _repository.updateFcmToken(token: _accessToken!, fcmToken: token);
+    } catch (e) {
+      debugPrint('Sync FCM token failed: $e');
+    }
+  }
+
   // ══════════════════════════════════════════════════════════════
   // initAuth — gọi khi app khởi động, giống useEffect trong App.tsx
   // ══════════════════════════════════════════════════════════════
@@ -63,6 +75,16 @@ class UserProvider extends ChangeNotifier {
       notifyListeners();
       return;
     }
+
+    // Thiếu dòng này thì sau lần đầu login có FCM → app restart → token đổi → FCM không được cập nhật.
+    NotificationService.instance.onTokenRefresh = (newToken) async {
+      if (_accessToken != null) {
+        await _repository.updateFcmToken(
+          token: _accessToken!,
+          fcmToken: newToken,
+        );
+      }
+    };
 
     try {
       // Thử refresh để lấy access token mới (token cũ có thể đã hết hạn)
@@ -113,6 +135,8 @@ class UserProvider extends ChangeNotifier {
       _authStatus = AuthStatus.authenticated;
       _isLoading = false;
       notifyListeners();
+
+      await _syncFcmToken();
       return true;
     } catch (e) {
       _errorMessage = e.toString().replaceAll('Exception: ', '');
@@ -160,6 +184,8 @@ class UserProvider extends ChangeNotifier {
 
       _isGoogleLoading = false;
       notifyListeners();
+
+      await _syncFcmToken();
       return true;
     } catch (e) {
       _errorMessage = e.toString().replaceFirst('Exception: ', '');
@@ -277,6 +303,15 @@ class UserProvider extends ChangeNotifier {
   // Logout — xoá token khỏi storage
   // ══════════════════════════════════════════════════════════════
   Future<void> logout() async {
+    // Delete FCM token on server
+    try {
+      if (_accessToken != null) {
+        await _repository.deleteFcmToken(token: _accessToken!);
+      }
+    } catch (_) {
+      // ignore delete FCM token API error
+    }
+
     try {
       await _repository.logout(
         token: _accessToken,

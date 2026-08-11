@@ -6,6 +6,7 @@ class GoogleAuthHelper {
   // -> chỉ khi đó idToken trả về mới verify được ở backend Node.js
   static final GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: ['email', 'profile'],
+    clientId: dotenv.env['GOOGLE_IOS_CLIENT_ID']!,
     serverClientId: dotenv.env['GOOGLE_WEB_CLIENT_ID']!,
   );
 

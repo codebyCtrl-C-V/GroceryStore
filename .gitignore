@@ -39,3 +39,8 @@ uploads/
 *.njsproj
 *.sln
 *.sw?
+
+# Firebase
+firebase-adminsdk.json
+google-services.json
+GoogleService-Info.plist

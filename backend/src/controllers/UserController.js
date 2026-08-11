@@ -12,6 +12,9 @@ class UserController {
     const { email, password } = req.body;
 
     try {
+      if (!email || !password) {
+        return res.status(400).json({ status: "error", message: "Vui lòng nhập đầy đủ thông tin" });
+      }
       // Kiểm tra user có tồn tại không
       const user = await User.findOne({ where: { email } });
       if (!user) {

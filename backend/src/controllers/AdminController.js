@@ -11,6 +11,7 @@ const fs = require('fs');
 const sequelize = require('sequelize');
 const Payment = require("../models/Payment");
 const cloudinary = require('../config/cloudinary');
+const { sendNotificationToDevice } = require('../utils/fcmService');
 
 dotenv.config();
 const slugify = require("slugify");
@@ -23,10 +24,13 @@ class AdminController {
       const totalOrders = await Order.count();
       const totalUsers = await User.count();
 
-      return res.json({ status: "success", data: {
-        totalProducts,
-        totalOrders,
-        totalUsers} });
+      return res.json({
+        status: "success", data: {
+          totalProducts,
+          totalOrders,
+          totalUsers
+        }
+      });
     } catch (error) {
       console.error(error);
       return res.status(500).json({ status: "error", message: "Lỗi server" });
@@ -48,11 +52,14 @@ class AdminController {
 
       const totalPages = Math.ceil(count / limit);
 
-      return res.json({ status: "success", data: {
-        users,
-        currentPage: page,
-        totalPages,
-        limit} });
+      return res.json({
+        status: "success", data: {
+          users,
+          currentPage: page,
+          totalPages,
+          limit
+        }
+      });
     } catch (error) {
       console.error(error);
       return res.status(500).json({ status: "error", message: "Lỗi server" });
@@ -142,12 +149,15 @@ class AdminController {
 
       const totalPages = Math.ceil(count / limit);
 
-      return res.json({ status: "success", data: {
-        users,
-        currentPage: page,
-        totalPages,
-        limit,
-        search: q} });
+      return res.json({
+        status: "success", data: {
+          users,
+          currentPage: page,
+          totalPages,
+          limit,
+          search: q
+        }
+      });
     } catch (error) {
       console.error(error);
       return res.status(500).json({ status: "error", message: "Lỗi server khi tìm kiếm người dùng" });
@@ -172,12 +182,15 @@ class AdminController {
       // Lấy danh sách danh mục cho select box
       const categories = await Category.findAll({ raw: true });
 
-      return res.json({ status: "success", data: {
-        products,
-        categories,
-        currentPage: page,
-        totalPages,
-        limit} });
+      return res.json({
+        status: "success", data: {
+          products,
+          categories,
+          currentPage: page,
+          totalPages,
+          limit
+        }
+      });
     } catch (error) {
       console.error(error);
       return res.status(500).json({ status: "error", message: "Lỗi server" });
@@ -188,12 +201,12 @@ class AdminController {
     const { name, price, stock, description, category_id, sale } = req.body;
     try {
       // Kiểm tra sản phẩm đã tồn tại chưa
-      const existingProduct = await Product.findOne({ 
-        where: { 
-          name: name 
-        } 
+      const existingProduct = await Product.findOne({
+        where: {
+          name: name
+        }
       });
-      
+
       if (existingProduct) {
         return res.json({ status: "success", redirect: "/admin/product?error=1" });
       }
@@ -208,27 +221,27 @@ class AdminController {
           folder: 'products'
         });
         imageUrl = result.secure_url;
-  
+
         // Xoá file tạm
         fs.unlinkSync(req.file.path);
       }
 
       // Tạo sản phẩm mới
-      const newProduct = await Product.create({ 
-        name, 
+      const newProduct = await Product.create({
+        name,
         slug,
-        price, 
-        stock, 
-        description, 
+        price,
+        stock,
+        description,
         category_id,
         sale: sale || 0,
-        image: imageUrl 
+        image: imageUrl
       });
 
       if (!newProduct) {
         return res.json({ status: "success", redirect: "/admin/product?error=4" });
       }
-      
+
       return res.json({ status: "success", redirect: "/admin/product?success=1" });
     } catch (error) {
       console.error(error);
@@ -239,7 +252,7 @@ class AdminController {
   async updateProduct(req, res) {
     try {
       const { id, name, price, stock, description, category_id, sale } = req.body;
-  
+
       const product = await Product.findByPk(id);
       if (!product) return res.json({ status: "success", redirect: "/admin/product?error=6" });
 
@@ -251,7 +264,7 @@ class AdminController {
           folder: 'products'
         });
         imageUrl = result.secure_url;
-  
+
         // Xoá file tạm
         fs.unlinkSync(req.file.path);
       }
@@ -259,15 +272,15 @@ class AdminController {
       const slug = slugify(name, { lower: true, strict: true });
 
       // Cập nhật sản phẩm
-      const updatedProduct = await product.update({ 
-        name, 
+      const updatedProduct = await product.update({
+        name,
         slug,
-        price, 
-        stock, 
-        description, 
+        price,
+        stock,
+        description,
         category_id,
         sale: sale || 0,
-        image: imageUrl 
+        image: imageUrl
       });
 
       if (!updatedProduct) {
@@ -320,13 +333,16 @@ class AdminController {
       // Lấy danh sách danh mục cho select box
       const categories = await Category.findAll({ raw: true });
 
-      return res.json({ status: "success", data: {
-        products,
-        categories,
-        currentPage: page,
-        totalPages,
-        limit,
-        search: q} });
+      return res.json({
+        status: "success", data: {
+          products,
+          categories,
+          currentPage: page,
+          totalPages,
+          limit,
+          search: q
+        }
+      });
     } catch (error) {
       console.error(error);
       return res.status(500).json({ status: "error", message: "Lỗi server khi tìm kiếm sản phẩm" });
@@ -364,12 +380,15 @@ class AdminController {
 
       const totalPages = Math.ceil(count / limit);
 
-      return res.json({ status: "success", data: {
-        orders,
-        currentPage: page,
-        totalPages,
-        limit,
-        currentStatus: status} });
+      return res.json({
+        status: "success", data: {
+          orders,
+          currentPage: page,
+          totalPages,
+          limit,
+          currentStatus: status
+        }
+      });
     } catch (error) {
       console.error(error);
       return res.status(500).json({ status: "error", message: "Lỗi server" });
@@ -379,7 +398,7 @@ class AdminController {
   async getOrderDetail(req, res) {
     try {
       const { id } = req.params;
-      
+
       const order = await Order.findOne({
         where: { id },
         raw: true,
@@ -399,10 +418,12 @@ class AdminController {
         nest: true
       });
 
-      return res.json({ status: "success", data: {
-        order,
-        orderDetails
-      } });
+      return res.json({
+        status: "success", data: {
+          order,
+          orderDetails
+        }
+      });
     } catch (error) {
       console.error(error);
       return res.status(500).json({ status: "error", message: "Lỗi server" });
@@ -420,6 +441,37 @@ class AdminController {
       }
 
       await order.update({ status });
+
+      // Tìm user sở hữu đơn hàng
+      const customer = await User.findByPk(order.userId);
+
+      const statusText = (status) => {
+        switch (status) {
+          case 'pending':
+            return 'đang chờ xử lý';
+          case 'processing':
+            return 'đang giao hàng';
+          case 'completed':
+            return 'hoàn thành';
+          case 'cancelled':
+            return 'đã hủy';
+          default:
+            return status;
+        }
+      };
+
+      if (customer && customer.fcmToken) {
+        await sendNotificationToDevice(
+          customer.fcmToken,
+          "Đơn hàng đã được cập nhật",
+          `Đơn hàng #${order.id} đã thay đổi thành ${statusText(status)}`,
+          {
+            type: "order_status",
+            orderId: order.id,
+            status,
+          }
+        );
+      }
       return res.json({ status: "success", redirect: "/admin/orders?success=1" });
     } catch (error) {
       console.error(error);
@@ -429,7 +481,7 @@ class AdminController {
 
   async searchOrders(req, res) {
     try {
-      const { q } = req.query;   
+      const { q } = req.query;
       //Tìm kiếm theo id
       const whereCondition = {
         id: q
@@ -451,9 +503,12 @@ class AdminController {
         return res.json({ status: "success", redirect: "/admin/orders?error=1" });
       }
 
-      return res.json({ status: "success", data: {
-        order,
-        search: q} });
+      return res.json({
+        status: "success", data: {
+          order,
+          search: q
+        }
+      });
     } catch (error) {
       console.error(error);
       return res.status(500).json({ status: "error", message: "Lỗi server khi tìm kiếm đơn hàng" });
@@ -502,11 +557,13 @@ class AdminController {
         group: [sequelize.fn('DATE', sequelize.col('createdAt'))]
       });
 
-      return res.json({ status: "success", data: {
-        statusStats,
-        monthlyRevenue: monthlyRevenue[0]?.dataValues?.total || 0,
-        dailyOrders
-      } });
+      return res.json({
+        status: "success", data: {
+          statusStats,
+          monthlyRevenue: monthlyRevenue[0]?.dataValues?.total || 0,
+          dailyOrders
+        }
+      });
     } catch (error) {
       console.error(error);
       return res.status(500).json({ status: "error", message: "Lỗi server khi lấy thống kê đơn hàng" });
@@ -535,11 +592,14 @@ class AdminController {
 
       const totalPages = Math.ceil(count / limit);
 
-      return res.json({ status: "success", data: {
-        payments,
-        currentPage: page,
-        totalPages,
-        limit} });
+      return res.json({
+        status: "success", data: {
+          payments,
+          currentPage: page,
+          totalPages,
+          limit
+        }
+      });
     } catch (error) {
       console.error(error);
       return res.status(500).json({ status: "error", message: "Lỗi server" });
@@ -557,6 +617,32 @@ class AdminController {
       }
 
       await payment.update({ status });
+
+      // Tìm user sở hữu đơn hàng
+      const order = await Order.findByPk(payment.orderId);
+      if (!order) {
+        return res.status(404).json({ status: "error", message: "Không tìm thấy đơn hàng" });
+      }
+      const user = await User.findByPk(order.userId);
+
+      const paymentText = {
+        pending: 'đang chờ xử lý',
+        paid: 'thành công',
+        failed: 'thất bại'
+      };
+
+      if (user && user.fcmToken) {
+        await sendNotificationToDevice(
+          user.fcmToken,
+          "Thanh toán đơn hàng đã được cập nhật",
+          `Thanh toán đơn hàng #${payment.orderId} đã thay đổi thành ${paymentText[status]}`,
+          {
+            type: "payment_status",
+            orderId: payment.orderId,
+            status,
+          }
+        );
+      }
       return res.json({ status: "success", redirect: "/admin/payment?success=1" });
     } catch (error) {
       console.error(error);
@@ -568,7 +654,7 @@ class AdminController {
     try {
       const { q } = req.query;
       const whereCondition = {
-          orderId: q
+        orderId: q
       };
 
       const payment = await Payment.findOne({
@@ -580,9 +666,12 @@ class AdminController {
         return res.json({ status: "success", redirect: "/admin/payment?error=1" });
       }
 
-      return res.json({ status: "success", data: {
-        payment,
-        search: q} });
+      return res.json({
+        status: "success", data: {
+          payment,
+          search: q
+        }
+      });
     } catch (error) {
       console.error(error);
       return res.status(500).json({ status: "error", message: "Lỗi server khi tìm kiếm thanh toán" });
@@ -593,8 +682,11 @@ class AdminController {
   async getCategories(req, res) {
     try {
       const categories = await Category.findAll({ raw: true });
-      return res.json({ status: "success", data: {
-        categories} });
+      return res.json({
+        status: "success", data: {
+          categories
+        }
+      });
     } catch (error) {
       console.error(error);
       return res.status(500).json({ status: "error", message: "Lỗi server khi lấy danh mục" });
@@ -657,20 +749,23 @@ class AdminController {
       const page = parseInt(req.query.page) || 1;
       const limit = 10;
       const offset = (page - 1) * limit;
-  
+
       const { count, rows: news } = await News.findAndCountAll({
         limit,
         offset,
         raw: true
       });
-  
+
       const totalPages = Math.ceil(count / limit);
-  
-      return res.json({ status: "success", data: {
-        news,
-        currentPage: page,
-        totalPages,
-        limit} });
+
+      return res.json({
+        status: "success", data: {
+          news,
+          currentPage: page,
+          totalPages,
+          limit
+        }
+      });
     } catch (error) {
       console.error(error);
       return res.status(500).json({ status: "error", message: "Lỗi server" });
@@ -681,7 +776,7 @@ class AdminController {
     const { title, content } = req.body;
     try {
       const slug = slugify(title, { lower: true, strict: true });
-  
+
       let imageUrl = null;
       if (req.file && req.file.path) {
         const result = await cloudinary.uploader.upload(req.file.path, {
@@ -690,18 +785,18 @@ class AdminController {
         imageUrl = result.secure_url;
         fs.unlinkSync(req.file.path);
       }
-  
+
       const newNews = await News.create({
         title,
         slug,
         content,
         image: imageUrl
       });
-  
+
       if (!newNews) {
         return res.json({ status: "success", redirect: "/admin/news?error=1" });
       }
-  
+
       return res.json({ status: "success", redirect: "/admin/news?success=1" });
     } catch (error) {
       console.error(error);
@@ -712,10 +807,10 @@ class AdminController {
   async updateNews(req, res) {
     try {
       const { id, title, content } = req.body;
-  
+
       const news = await News.findByPk(id);
       if (!news) return res.json({ status: "success", redirect: "/admin/news?error=3" });
-  
+
       let imageUrl = news.image;
       if (req.file && req.file.path) {
         const result = await cloudinary.uploader.upload(req.file.path, {
@@ -724,11 +819,11 @@ class AdminController {
         imageUrl = result.secure_url;
         fs.unlinkSync(req.file.path);
       }
-  
+
       const slug = slugify(title, { lower: true, strict: true });
-  
+
       await news.update({ title, slug, content, image: imageUrl });
-  
+
       return res.json({ status: "success", redirect: "/admin/news?success=2" });
     } catch (error) {
       console.error(error);
@@ -741,7 +836,7 @@ class AdminController {
       const { id } = req.body;
       const news = await News.findByPk(id);
       if (!news) return res.status(404).json({ status: "error", message: "Không tìm thấy tin tức" });
-  
+
       await news.destroy();
       return res.json({ status: "success", redirect: "/admin/news" });
     } catch (error) {
@@ -756,35 +851,38 @@ class AdminController {
       const page = parseInt(req.query.page) || 1;
       const limit = 10;
       const offset = (page - 1) * limit;
-  
+
       const whereCondition = {
         [Op.or]: [
           { title: { [Op.like]: `%${q}%` } },
           { content: { [Op.like]: `%${q}%` } }
         ]
       };
-  
+
       const { count, rows: news } = await News.findAndCountAll({
         where: whereCondition,
         limit,
         offset,
         raw: true,
       });
-  
+
       const totalPages = Math.ceil(count / limit);
-  
-      return res.json({ status: "success", data: {
-        news,
-        currentPage: page,
-        totalPages,
-        limit,
-        search: q} });
+
+      return res.json({
+        status: "success", data: {
+          news,
+          currentPage: page,
+          totalPages,
+          limit,
+          search: q
+        }
+      });
     } catch (error) {
       console.error(error);
       return res.status(500).json({ status: "error", message: "Lỗi server khi tìm kiếm tin tức" });
     }
   }
-  
+
 
 }
 

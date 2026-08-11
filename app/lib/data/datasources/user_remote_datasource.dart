@@ -182,4 +182,28 @@ class UserRemoteDataSource {
     final responseBody = jsonDecode(response.body);
     return response.statusCode == 200 && responseBody['status'] == 'success';
   }
+
+  Future<bool> updateFcmToken({
+    required String token,
+    required String fcmToken,
+  }) async {
+    final response = await http.post(
+      Uri.parse('${ApiEndpoints.baseUrl}/users/fcm-token'),
+      headers: _headers(token),
+      body: jsonEncode({'fcmToken': fcmToken}),
+    );
+
+    final responseBody = jsonDecode(response.body);
+    return response.statusCode == 200 && responseBody['status'] == 'success';
+  }
+
+  Future<bool> deleteFcmToken({required String token}) async {
+    final response = await http.post(
+      Uri.parse('${ApiEndpoints.baseUrl}/users/fcm-token/delete'),
+      headers: _headers(token),
+    );
+
+    final responseBody = jsonDecode(response.body);
+    return response.statusCode == 200 && responseBody['status'] == 'success';
+  }
 }

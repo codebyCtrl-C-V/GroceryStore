@@ -10,6 +10,7 @@ const User = sequelize.define("User", {
     address: { type: DataTypes.TEXT },
     role: { type: DataTypes.ENUM("customer", "admin"), defaultValue: "customer" },
     refreshToken: { type: DataTypes.TEXT },
+    fcmToken: { type: DataTypes.STRING },
 }, { tableName: "users", timestamps: true });
 
 module.exports = User;
