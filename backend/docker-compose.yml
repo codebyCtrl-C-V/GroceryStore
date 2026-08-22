@@ -1,31 +1,26 @@
 version: "3.9"
 
 services:
-  web:
+  # Phân hệ API Server (Backend)
+  backend:
     build: .
-    container_name: DATN_web
+    container_name: DATN_backend
     ports:
       - "${PORT:-3000}:3000"
     env_file:
       - .env
-    depends_on:
-      - db
     restart: always
     volumes:
       - .:/app
+      - /app/node_modules # Tránh ghi đè thư mục node_modules từ local máy chủ
     command: npm start
 
-  db:
-    image: mysql:8
-    container_name: mysql_db
+  # Phân hệ Giao diện Web (React Frontend)
+  frontend:
+    build: ../frontend
+    container_name: DATN_frontend
+    ports:
+      - "5173:80"
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_PASS}
-      MYSQL_DATABASE: ${DB_NAME}
-    ports:
-      - "3307:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-
-volumes:
-  mysql_data:
+      - VITE_URL_LINKS=http://localhost:3000/api/v1/
